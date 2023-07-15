@@ -1,15 +1,56 @@
 ---
+const posts = await Astro.glob("./posts/*.md");
+import BaseLayout from "../layouts/BaseLayout.astro"
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Haris' Blog">
+    <main>
+        <h1 class="overwrite"> Haris' Blog </h1>
+
+        <hr />
+        <h3 class="overwrite"> 
+            Hello, this is where I share all the things I learn about. Most topics will fall under <span>WebGL</span>,
+            <span>threejs</span> and <span>web development</span>.
+        </h3>
+        <hr />
+
+        <section class="post-list">
+        { posts.map((post) => (
+            <a href={post.url} class="post-link">
+                <div class="post-title"> {post.frontmatter.title} </div>
+                <div class="post-date"> {post.frontmatter.date} </div>
+            </a>
+        )
+        )}
+        </section>
+    </main>
+</BaseLayout>
+
+<style lang="scss">
+    main {
+        margin-inline: auto;
+        padding-inline: 1rem;
+        max-width: 85ch;
+    }
+    .overwrite {
+        color: var(--primary-color);
+    }
+
+    .post-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .post-link {
+        display: flex;
+        justify-content: space-between;
+        
+        text-decoration: none;
+        font-size: var(--md);
+    }
+
+    .post-date {
+        color: var(--code-fg-color);
+    }
+
+</style>

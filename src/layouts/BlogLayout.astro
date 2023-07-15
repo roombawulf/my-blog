@@ -1,0 +1,27 @@
+---
+const { frontmatter } = Astro.props
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout title={frontmatter.title}>
+    <main>
+        <a href="/"> back </a>
+        <h1>{frontmatter.title}</h1>
+        <div> {frontmatter.description} | {frontmatter.date} </div>
+        <hr />
+        
+        <slot />
+    </main>
+</BaseLayout>
+
+<style lang="scss" is:global>
+    main {
+        margin-inline: auto;
+        padding-inline: 1rem;
+        max-width: 85ch;
+    }
+
+    h1, h2, h3 {
+        color: var(--highlight-color); 
+    }
+</style>

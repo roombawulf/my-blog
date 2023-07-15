@@ -1,0 +1,144 @@
+---
+import '@fontsource/cairo'
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>{title}</title>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+
+<style lang="scss" is:global>
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    :root {
+        --bg-color: hsl(30, 20%, 6%);
+        --primary-color: hsl(42, 80%, 90%);
+        --highlight-color: hsl(23, 60%, 60%);
+
+        --code-bg-color: hsl(0,0%,7%);
+        --code-fg-color: hsl(33,39%,58%);
+        --code-border-color: hsl(0,0%,11%);
+
+        --selection-bg-color: hsla(0,0%,93%,15%);
+        --selection-fg-color: hsla(0,0%,93%,78%);
+
+        --2xl: 4.5rem;
+        --xl: 2.25rem;
+        --lg: 1.875rem;
+
+        --md: 1.25rem;
+        --sm: 1.125rem;
+        --xs: 1.0rem;
+    }
+
+    @media screen and (max-width: 640px) {
+        :root {
+            --2xl: 3.5rem;
+            --xl: 1.875rem;
+            --lg: 1.5rem;
+
+            --md: 1.125rem;
+            --sm: 1.0rem;
+            --xs: 0.875rem;
+        }   
+    }
+
+    html {
+        font-family: 'Cairo', system-ui, sans-serif;
+        color: var(--primary-color);
+        background-color: var(--bg-color);
+    }
+
+    body {
+        margin: 0;
+    }
+
+    %heading {
+        margin: 0;
+        padding: 0;
+        color: var(--primary-color);
+        letter-spacing: 0.05em;
+    }
+
+    h1 {
+        @extend %heading;
+        font-size: var(--2xl);
+    }
+
+    h2 {
+        @extend %heading;
+        font-size: var(--xl);
+    }
+
+    h3 {
+        @extend %heading;
+        font-size: var(--lg);
+    }
+
+    p {
+        margin: 0 0 2rem 0;
+        padding: 0;
+        color: var(--primary-color);
+        font-size: var(--sm);
+        letter-spacing: 0.0475em;
+    }
+
+    span {
+        color: var(--highlight-color);
+    }
+
+    a {
+        letter-spacing: 0.0475em;
+        text-decoration: underline;
+        color: var(--highlight-color);
+        transition: color 0.5s;
+    }
+
+    a:hover {
+        color: var(--primary-color);
+    }
+
+    hr {
+        color: var(--primary-color);
+        border-width: 1px;
+        margin: 2rem 0rem;
+    }
+
+    strong, em {
+        color: var(--highlight-color);
+    }
+
+    code {
+        padding-inline: 0.25rem;
+
+        background-color: var(--code-bg-color);
+
+        color: var(--code-fg-color);
+        border-style: solid;
+        border-width: 2px;
+        border-color: var(--code-border-color);
+        border-radius: 0.25rem;
+
+        font-size: var(--xs);
+        letter-spacing: normal;
+    }
+
+    *::selection {
+        color: var(--selection-fg-color);
+        background-color: var(--selection-bg-color);
+    }
+
+</style>
