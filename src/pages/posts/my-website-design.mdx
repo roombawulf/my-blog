@@ -1,0 +1,163 @@
+---
+layout: ../../layouts/BlogLayout.astro
+title: My website's design
+author: Haris Raza
+date: 12-07-2023
+description: A brief look into the design of my website.
+---
+import DemoMDX from './DemoMDX.jsx'
+
+Ever since I designed my first website back in January, I have learnt a lot about what I like/dislike with regards to web-design. However, designing things is *hard* and I suck at it. This iteration aims to keep the design as simple as possible. I'll use *threejs/WebGL* for the "shiny" parts of my website... once I get around to it. 
+
+Here I am briefly going to go over the *current* design, choices of technologies and so forth...
+
+## The Astro Framework
+
+Beforehand, I have used [React](https://react.dev) + [Next.js](https://nextjs.org) to build my website. However, I realise that I don't necessarily need all the tools these frameworks provide. This website is not a fully featured web application. At most, I would use React for 3D development through the useful [react-three-fiber](https://github.com/pmndrs/react-three-fiber) library.
+
+This is where [Astro](https://astro.build) comes in. It is an *all-in-one* framework with speed in mind. I work with `.astro` file types which are essentially `.html` files with a little bit extra. Astro also allows me to optionally bundle frameworks likes React, Vue or Svelte into their own little components (I could even mix them together). So when I want to use those tools, I can contain them in their own little components whilst leaving the rest of the site to be pure HTML + CSS + JavaScript.
+
+## Color Scheme
+
+I **really** like earthy-neutral tones and have tried to stick to the [60-30-10 rule](https://uxplanet.org/the-60-30-10-rule-a-foolproof-way-to-choose-colors-for-your-ui-design-d15625e56d25) as much as possible. This article on [design systems](https://blog.maximeheckel.com/posts/building-a-design-system-from-scratch/) from Maxime Heckel was extremely helpful in understanding some concepts. I'm not sure if its good practice, but I directly style HTML elements as of right now. You can see my defined CSS global variables in `:root` with your browser's dev tools.
+
+## Markdown & MDX
+
+Markdown is simple and easy so that is what I use for these posts. Additionally, I use [MDX](https://mdxjs.com/) which allows for a mix of *markdown* and *JSX* for extra flexability (Astro seems to work quite nicely with it too). 
+
+### Code 
+
+Of course I will be showing code here and there. Inline code is already `styled` but code blocks were a bit more tricky. I came across a fairly new library called [expressive-code](https://github.com/expressive-code/expressive-code) which was exactly what I was looking for. Examples of code blocks are shown below.
+
+```js
+// this is some javascript code
+const geometry = new THREE.BoxGeometry()
+const material = new THREE.MeshNormalMaterial()
+const mesh = new THREE.Mesh(geometry, material)
+
+scene.add(mesh)
+```
+
+```glsl
+// this is some glsl code
+void main {
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+}
+```
+
+### Components in MDX
+
+MDX allows for slotting in components which is extremely useful to add some dynamic presentation. The following threejs environment is a component that is slotted in directly into the `.mdx` file of this post. The code looks like this:
+
+```mdx title="my-website-design.mdx"
+MDX allows for slotting in components...
+<DemoMDX />
+```
+
+Which loads this *threejs* environment (you can rotate this by the way):
+
+<DemoMDX client:load />
+
+...and if you are interested the code for this looks like so:
+
+```jsx title="DemoMDX.jsx"
+import { shaderMaterial, OrbitControls } from "@react-three/drei";
+import { Canvas, extend, useFrame } from "@react-three/fiber";
+import { useRef } from "react";
+
+const BlobMaterial = shaderMaterial(
+    { u_time: null },
+    `
+        uniform float u_time;
+        varying float v_displace;
+        
+        float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+        vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+        vec4 perm(vec4 x){return mod289(((x * 34.0) + 1.0) * x);}
+
+        float noise(vec3 p){
+            vec3 a = floor(p);
+            vec3 d = p - a;
+            d = d * d * (3.0 - 2.0 * d);
+
+            vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+            vec4 k1 = perm(b.xyxy);
+            vec4 k2 = perm(k1.xyxy + b.zzww);
+
+            vec4 c = k2 + a.zzzz;
+            vec4 k3 = perm(c);
+            vec4 k4 = perm(c + 1.0);
+
+            vec4 o1 = fract(k3 * (1.0 / 41.0));
+            vec4 o2 = fract(k4 * (1.0 / 41.0));
+
+            vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+            vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
+
+            return o4.y * d.y + o4.x * (1.0 - d.y);
+        }
+
+        void main() {
+
+            vec3 pos = position;
+
+            v_displace = noise((1.6 * pos) + u_time) + noise((1.8* pos) - 1.33 * u_time);
+            pos += normal * v_displace;
+
+            vec4 modelPosition = modelMatrix * vec4(pos, 1.0);
+            vec4 viewPosition = viewMatrix * modelPosition;
+            vec4 projectedPosition = projectionMatrix * viewPosition;
+
+            gl_Position = projectedPosition;
+        }
+    `,
+    `
+        uniform float u_time;
+        varying float v_displace;
+
+        void main() {
+            vec3 col1 = vec3(1.0, 0.784 * (0.1 * sin(u_time)), 0.306);
+            vec3 col2 = vec3(0.95, 0.396, 0.118);
+
+            vec3 fcol = mix( col1, col2, v_displace );
+
+            gl_FragColor = vec4(fcol, 1.0);
+        }
+    `
+)
+extend({ BlobMaterial })
+
+function Blob() {
+
+    const material = useRef()
+    useFrame((state, delta) => {
+        material.current.u_time = state.clock.elapsedTime
+    })
+    
+    return(
+        <mesh>
+            <icosahedronGeometry args={[1, 12]} />
+            <blobMaterial ref={material} />
+        </mesh>
+    )
+}
+
+function DemoMDX() {
+    return(
+        <div style={{ marginBottom: '2rem', height: '40svh'}}>
+            <Canvas>
+                <Blob />
+                <OrbitControls />
+            </Canvas>
+        </div>
+    )
+}
+export default DemoMDX
+```
+
+## Stuff for the Future
+
+So far this is what I working with. I intend to improve things over time once I realise what I actually need. 
+At the moment, the only thing I have in mind is *contents section for navigating through headers*. 
+
+Thanks for reading!

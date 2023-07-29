@@ -5,12 +5,14 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 
 <BaseLayout title={frontmatter.title}>
     <main>
-        <a href="/"> back </a>
+        <a href="/"> go back </a>
         <h1>{frontmatter.title}</h1>
         <div> {frontmatter.description} | {frontmatter.date} </div>
         <hr />
         
         <slot />
+
+        <a href="/"> go back </a>
     </main>
 </BaseLayout>
 
