@@ -3,7 +3,12 @@ const { frontmatter } = Astro.props
 import BaseLayout from '../layouts/BaseLayout.astro'
 ---
 
-<BaseLayout title={frontmatter.title}>
+<BaseLayout 
+    title={frontmatter.title} 
+    description={frontmatter.description} 
+    type={'article'}
+    articleURL={`https://blog.hraza.dev${frontmatter.url}`}
+>
     <main>
         <a href="/"> go back </a>
         <h1>{frontmatter.title}</h1>

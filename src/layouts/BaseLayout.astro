@@ -1,6 +1,6 @@
 ---
 import '@fontsource/cairo'
-const { title } = Astro.props;
+const { title, description, type, articleURL } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -8,6 +8,10 @@ const { title } = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+        <meta property="og:title" content={title}>
+        <meta property="og:description" content={description}>
+        <meta property="og:type" content={type}>
+        <meta property="og:url" content={articleURL}>
 		<title>{title}</title>
 	</head>
 	<body>
