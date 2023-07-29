@@ -8,10 +8,10 @@ const { title, description, type, articleURL } = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+        <meta property="og:type" content={type ? type : 'website'}>
         <meta property="og:title" content={title}>
-        <meta property="og:description" content={description}>
-        <meta property="og:type" content={type}>
-        <meta property="og:url" content={articleURL}>
+        { description && <meta property="og:description" content={description}> }
+        { articleURL && <meta property="og:url" content={articleURL}> }
 		<title>{title}</title>
 	</head>
 	<body>
